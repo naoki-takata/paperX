@@ -1,0 +1,7 @@
+main_tex = "tex/main.tex"
+engine = "tectonic"
+title = "Your Paper Title"
+author = "Your Name"
+affiliation = "Your Affiliation"
+keywords = "keyword1, keyword2"
+abstract_text = "Your abstract here."

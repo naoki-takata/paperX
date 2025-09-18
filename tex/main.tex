@@ -1,0 +1,184 @@
+% !TEX program = lualatex
+\documentclass[a4paper,11pt]{article}
+
+% -------------------- Packages --------------------
+\usepackage[margin=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage[noabbrev,nameinlink]{cleveref}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black}
+
+% -------------------- Theorem Envs --------------------
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+% -------------------- Macros --------------------
+\newcommand{\C}{\text{C}} % Cooperate
+\newcommand{\D}{\text{D}} % Defect
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\1}{\mathbf{1}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% -------------------- Title --------------------
+\title{Achieving Full Cooperation in Finitely Repeated Prisoners' Dilemma via a Deposit Mechanism: Implementability and Robustness}
+\author{Naoki Takata}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+In a finitely repeated Prisoners' Dilemma (PD), backward induction implies defection in all periods.
+We introduce a simple \emph{deposit mechanism} under which each player posts a refundable deposit that is forfeited if and only if they ever choose \D. 
+We show that if the deposit satisfies the threshold $D \ge T-R$ (where $T$ is the temptation payoff and $R$ is the mutual cooperation payoff), then full cooperation $(\C,\C,\ldots,\C)$ is a subgame perfect equilibrium (SPE) for any finite horizon, irrespective of discounting, provided forfeiture is immediate. 
+We further derive robustness conditions under observational errors (false forfeitures) and partial slashing, discuss implementation details, and provide a simple simulation procedure.
+\end{abstract}
+
+\noindent\textbf{Keywords:} repeated games; mechanism design; commitment; collateral; subgame perfect equilibrium; deposit mechanism; prisoners' dilemma; cooperation; implementation; robustness; simulation; comparative statics; implications
+
+\section{Introduction}
+In finitely repeated PD, the standard prediction is universal defection due to backward induction.
+In practice, institutions like deposits, sureties, and penalties support cooperation.
+We formalize a minimal change to the stage environment---a \emph{deposit mechanism}---and study its equilibrium effects.
+Our main result is a simple threshold: if the private cost of forfeiture exceeds the one-shot deviation gain $T-R$, then full cooperation is sustained as an SPE for \emph{any} finite horizon.
+
+\section{Model}
+Consider a two-player symmetric PD with stage payoffs
+\[
+T>R>P>S,\qquad 2R > T+S.
+\]
+Actions are $\C$ (cooperate) and $\D$ (defect). The horizon is finite $N\in\mathbb{N}$. 
+Stage actions are perfectly observed\footnote{We introduce observation errors in a robustness section.}.
+
+\paragraph{Deposit mechanism}
+Before period 1, each player $i\in\{1,2\}$ escrows a deposit $D>0$ with a trusted third party (or a smart contract).
+Rules:
+\begin{itemize}[leftmargin=1.5em]
+  \item If player $i$ ever plays \D\ in any period, their deposit $D$ is immediately forfeited.
+  \item If $i$ plays \C\ in all periods, their deposit is fully refunded at the end.
+\end{itemize}
+Period-$t$ payoffs equal stage payoffs plus any immediate deposit change.
+
+\paragraph{Strategies and equilibrium}
+We allow history-dependent strategies and use subgame perfection.
+Consider the \emph{grim trigger} profile $\sigma^\ast$:
+\begin{quote}
+Play \C\ as long as no \D\ has occurred in the history; play \D\ forever after the first \D.
+\end{quote}
+
+\section{Main result}
+\begin{theorem}[Deposit threshold for full cooperation]\label{thm:main}
+Under the deposit mechanism, if
+\begin{equation}\label{eq:threshold}
+D \;\ge\; T - R,
+\end{equation}
+then the grim-trigger profile $\sigma^\ast$ is an SPE for any finite horizon $N$. On the equilibrium path, players cooperate in all periods.
+\end{theorem}
+
+\begin{proof}
+By the one-shot deviation principle, consider a history with no prior \D. In period $t$, deviating from \C\ to \D\ yields an immediate gain $T-R>0$ but triggers immediate forfeiture of $D$. 
+Future continuation values under grim trigger cancel in the comparison because after any deviation both players play \D\ henceforth, while under compliance the continuation is identical up to the deviation decision at $t$. 
+Therefore, the deviation's net benefit is $(T-R)-D\le 0$ whenever \eqref{eq:threshold} holds. In any subgame after some \D\ has occurred, playing \D\ is a stage Nash best reply. Hence $\sigma^\ast$ is subgame perfect. Immediate forfeiture makes the result independent of $N$ and discounting.
+\end{proof}
+
+\begin{remark}[Discounting and payment timing]
+With immediate forfeiture, any discount factor $\delta\in(0,1]$ leaves \eqref{eq:threshold} unchanged. If forfeiture were delayed until the end, the current-value cost would be $\delta^{N-t}D$, yielding a history-dependent threshold $D \ge (T-R)\,\delta^{-(N-t)}$. Immediate slashing is preferable in implementation.
+\end{remark}
+
+\section{Robustness}
+\subsection{Partial slashing}
+If only a fraction $\alpha\in(0,1]$ of the deposit is forfeited upon any \D, the threshold becomes
+\[
+\alpha D \;\ge\; T-R
+\quad\iff\quad
+D \;\ge\; \frac{T-R}{\alpha}.
+\]
+
+\subsection{Observation errors (false positives)}
+Suppose a compliant \C\ player is mistakenly forfeited with probability $\phi\in[0,1)$ in a period (false positive), while a \D\ player is always forfeited (no false negatives).
+Then the expected cost of deviating once at $t$ is $(1-\phi)D$, so the incentive constraint is
+\begin{equation}\label{eq:noise-threshold}
+D \;\ge\; \frac{T-R}{1-\phi}.
+\end{equation}
+Higher false-positive rates require proportionally larger deposits.
+
+\section{Comparative statics and implications}
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Simplicity:} The threshold depends only on the stage deviation gain $T-R$, not on horizon length or detailed histories (with immediate slashing).
+  \item \textbf{Decentralized implementation:} Smart-contract escrow with immediate slashing preserves the clean threshold in \cref{thm:main}.
+  \item \textbf{Practical design:} In noisy environments, calibrate $D$ using \eqref{eq:noise-threshold} and include an appeals/review process.
+\end{itemize}
+
+\section{A simple simulation procedure}
+Given $(T,R,P,S)$, sweep $D$ and measure the cooperation rate under grim trigger with error rate $\phi$.
+\begin{algorithm}[H]
+\caption{Monte Carlo evaluation of cooperation vs.\ deposit level}
+\begin{algorithmic}[1]
+\State \textbf{Input:} $T,R,P,S$, horizon $N$, error rate $\phi$, deposit grid $\{D_k\}$, trials $M$
+\For{each $D_k$}
+  \For{$m=1$ to $M$}
+    \State history $\leftarrow$ empty; forfeited$\leftarrow$False
+    \For{$t=1$ to $N$}
+       \If{forfeited=False} \State both play \C
+       \Else \State both play \D
+       \EndIf
+       \State with prob.\ $\phi$, randomly forfeit one compliant player (if any); if so, set forfeited=True
+    \EndFor
+    \State record cooperation share in this run
+  \EndFor
+  \State output average cooperation share for $D_k$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\section{Extension: false negatives}
+If a deviator avoids forfeiture with probability $\beta\in(0,1)$ (false negative), the expected forfeiture cost after deviating is $(1-\beta)D$.
+With both false positives $\phi$ and false negatives $\beta$, a sufficient condition is
+\[
+(T-R) \;\le\; (1-\beta - \phi + \phi\beta)\,D.
+\]
+Large $\phi$ and $\beta$ sharply increase the required $D$, highlighting the role of \emph{monitoring and evidence design}.
+
+\section{Related literature}
+Collateral and hostage mechanisms in repeated games are classical. Our contribution is to (i) isolate the \emph{minimal} threshold $D\ge T-R$, (ii) emphasize independence from horizon and discounting under immediate slashing, and (iii) provide closed-form robustness conditions under observational imperfections aligned with modern implementations.
+See, e.g., \cite{fudenberg_tirole,mailath_samuelson,abreu,kreps}.
+
+\section{Conclusion}
+A deposit mechanism overturns the non-cooperation prediction in finitely repeated PD with a minimal institutional change.
+A simple condition---forfeiture at least as large as the one-shot temptation gain---implements full cooperation as an SPE.
+In realistic noisy environments, appropriate deposit calibration and appeals procedures maintain robustness.
+
+\section*{Acknowledgments}
+
+
+\bibliographystyle{plain}
+\bibliography{bib/references}
+
+\appendix
+\section{Stage payoffs and notation}
+The symmetric PD payoff matrix (row player's payoffs first):
+\begin{center}
+\begin{tabular}{c|cc}
+ & \C & \D \\
+\hline
+\C & $(R,R)$ & $(S,T)$ \\
+\D & $(T,S)$ & $(P,P)$ \\
+\end{tabular}
+\end{center}
+
+\section{Rewriting the threshold}
+\Cref{thm:main}'s condition can be written as $D\ge \Delta$, where $\Delta:=T-R$ is the one-shot deviation gain.
+With partial slashing $\alpha$ and false positives $\phi$ simultaneously, a sufficient condition is $\alpha(1-\phi)D \ge \Delta$.
+\end{document}
