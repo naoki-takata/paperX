@@ -34,12 +34,6 @@ cargo run --release -- <command>
 cargo run --release -- build --open
 ```
 
-### From Crates.io (when published)
-
-```bash
-cargo install paperx
-```
-
 ## Quick Start
 
 ### Create a New Paper
