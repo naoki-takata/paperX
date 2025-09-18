@@ -1,0 +1,10 @@
+/target/
+**/*.rs.bk
+build/
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.synctex.gz
