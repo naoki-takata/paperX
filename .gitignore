@@ -9,3 +9,4 @@ build/
 *.blg
 *.synctex.gz
 mypaper/
+.DS_Store
