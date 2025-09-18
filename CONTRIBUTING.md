@@ -2,10 +2,6 @@
 
 Thank you for your interest in contributing to paperx! This document provides guidelines and information for contributors.
 
-## Code of Conduct
-
-This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
-
 ## Getting Started
 
 ### Prerequisites
@@ -19,12 +15,12 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/your-username/paperx.git
+   git clone https://github.com/naoki-takata/paperx.git
    cd paperx
    ```
 3. Add the upstream repository:
    ```bash
-   git remote add upstream https://github.com/your-username/paperx.git
+   git remote add upstream https://github.com/naoki-takata/paperx.git
    ```
 4. Build the project:
    ```bash
