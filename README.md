@@ -1,7 +1,5 @@
 # paperx
 
-[![Crates.io](https://img.shields.io/crates/v/paperx.svg)](https://crates.io/crates/paperx)
-[![Documentation](https://docs.rs/paperx/badge.svg)](https://docs.rs/paperx)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A modern Rust CLI tool for LaTeX paper management: scaffold, build, watch, and organize academic papers with ease.
